@@ -16,7 +16,14 @@ class UnityController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function __invoke(Request $request)
+    public function index(Request $request)
+    {
+        return view('unities.index', [
+
+        ]);
+    }
+
+    public function list(Request $request)
     {
         /**
          * @param Builder $query
@@ -24,7 +31,7 @@ class UnityController extends Controller
          * @param $value
          */
         $like = function (Builder $query, string $column, $value) {
-            $query->where($column, 'like', "%${value}%");
+            $query->orWhere($column, 'like', "%${value}%");
         };
 
         /**
@@ -33,7 +40,7 @@ class UnityController extends Controller
          * @param $value
          */
         $equal = function (Builder $query, string $column, $value) {
-            $query->where($column, '=', $value);
+            $query->orWhere($column, '=', $value);
         };
 
         $filters = [
@@ -56,17 +63,17 @@ class UnityController extends Controller
         /** @var Builder $query */
         $query = Unity::query();
 
-        foreach ($filters as $column => $filter) {
-            $query->when($request[$column], function (Builder $query, $value) use ($column, $filter) {
-                $filter($query, $column, $value);
+        $filter = $request->filter ?: null;
+
+        foreach ($filters as $column => $filterQuery) {
+            $query->when($filter, function (Builder $query, $value) use ($column, $filterQuery) {
+                $filterQuery($query, $column, $value);
             });
         }
 
-        return response()->json($query->get()->toArray());
-    }
-
-    public function options()
-    {
-        // return possibles column options
+        return view('unities.list', [
+            'unities' => $query->paginate($request->per_page ?: 10),
+            'filter' => $filter
+        ]);
     }
 }

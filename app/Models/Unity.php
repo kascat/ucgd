@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Unity extends Model
 {
+    protected $connection = 'sqlite';
+
     /** PROPERTIES
         code:               text
         distributor_name:   text

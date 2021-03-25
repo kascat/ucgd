@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UnityController;
+use App\Http\Controllers\UnityApiController;
 
 /**
 |--------------------------------------------------------------------------
@@ -14,6 +14,9 @@ use App\Http\Controllers\UnityController;
 |
 */
 
-Route::group(['namespace' => '\\'], function() {
-    Route::get('unities', UnityController::class);
+Route::group([
+    'namespace' => '\\',
+    'prefix' => 'unities'
+], function() {
+    Route::get('/', UnityApiController::class);
 });
